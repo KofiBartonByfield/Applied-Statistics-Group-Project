@@ -9,11 +9,10 @@ library(lubridate)
 # read in the data
 # downloaded from:
 # https://www.start.umd.edu/download-global-terrorism-database
-
 global_terror <- read.csv('data/globalterrorismdb_0522dist.csv')
 
 
-
+# look at column names
 colnames(global_terror)
 
 # 135 different variables
@@ -37,9 +36,6 @@ for (col in cols) {
   
 }
 # we see we only have missing data for gname out of these variables
-
-
-
 
 
 
@@ -244,11 +240,34 @@ lines(density(europe_terror$months_since_start, na.rm = TRUE),
 
 
 
+# ============================================================================ #
+
+colnames(europe_terror)
+
+model1 <- glm(nvictims ~ as.factor(country),
+              data = europe_terror,
+              family = poisson)
+
+model2 <- glm(nvictims ~ as.factor(targtype1) ,
+             data = europe_terror,
+             family = poisson)
+
+model2 <- glm(nvictims ~ . ,
+              data = europe_terror,
+              family = poisson)
+
+
+stargazer::stargazer(model2, type = 'text')
 
 
 
 
 
+
+# 
+# 
+# qqnorm(europe_terror$)
+# qqline(judge_means$lib_vote_share, col = "red")
 
 
 
