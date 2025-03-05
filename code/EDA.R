@@ -101,6 +101,26 @@ plot(global_terror$months_since_start)
 
 
 
+
+# time of year quantified
+global_terror$time_of_year <-  ifelse(global_terror$imonth %in% c(3, 4, 5), 'Spring',
+                         ifelse(global_terror$imonth %in% c(6, 7, 8), 'Summer',
+                         ifelse(global_terror$imonth %in% c(9, 10, 11), 'Autumn',
+                         ifelse(global_terror$imonth %in% c(12, 1, 2), 'Winter',
+                  0)))) # NA for non-existent months
+
+
+
+
+
+
+
+
+
+
+
+
+
 # dependent variable(s)
 # ---------------------
 summary(global_terror$nkill)
@@ -132,7 +152,48 @@ plot(global_terror$nvictims)
 
 
 # create subset
-subset_df <- global_terror %>% select(nvictims, months_since_start, gname, targtype1, weaptype1, country)
+europe_terror <- global_terror %>% select(nvictims, 
+                                      months_since_start, 
+                                      time_of_year,
+                                      date_recorded,
+                                      gname, 
+                                      targtype1, 
+                                      weaptype1, 
+                                      country,
+                                      region) %>%
+                            filter(region %in% c(8, 9)) # only keep Europe.
+
+
+head(europe_terror)
+dim(europe_terror)
+# 22654 entries     
+# 9 columns
+
+
+
+
+
+
+# count the number of attacks per group
+sorted_gname <- sort(table(europe_terror$gname), decreasing = TRUE)
+
+# identify groups with more than 100 attacks
+selected_groups <- names(sorted_gname[sorted_gname > 100])
+
+# keep selected groups, replace others with "Other"
+europe_terror$gname <- ifelse(europe_terror$gname %in% selected_groups, 
+                              europe_terror$gname, "Other")
+
+# check results
+table(europe_terror$gname)
+
+
+View(europe_terror)
+
+
+
+
+
 
 
 
@@ -140,7 +201,7 @@ subset_df <- global_terror %>% select(nvictims, months_since_start, gname, targt
 # Visualisations
 # --------------
 
-boxplot(subset_df$nvictims, 
+boxplot(europe_terror$nvictims, 
         main = 'Boxplot of Number of Wounded', 
         ylab = 'Number of Wounded', 
         col = 'orange')
@@ -150,7 +211,7 @@ boxplot(subset_df$nvictims,
 # ---------------------------
 
 # log 1+nvictims (avoids log(0) error)
-boxplot(log1p(subset_df$nvictims), 
+boxplot(log1p(europe_terror$nvictims), 
         main = 'Log-Transformed Boxplot of Wounded', 
         ylab = 'log(1 + nwound)', 
         col = 'orange')
@@ -159,24 +220,38 @@ boxplot(log1p(subset_df$nvictims),
 
 # distribution of the days since
 # ------------------------------
-plot(subset_df$months_since_start, 
-     main = 'Distribution of Months Since Start', 
-     xlab = 'Count', 
-     ylab = 'Months Since Start', 
-     pch = 16, 
-     cex = 0.6)
+# Create a histogram
+hist(europe_terror$months_since_start, 
+     main = 'Distribution of European Terror Attacks Over Time', 
+     xlab = sprintf("Months Since %s", min(europe_terror$date_recorded)),
+     ylab = 'Count', 
+     col = 'skyblue', 
+     border = 'black', 
+     breaks = 50, 
+     probability = TRUE)  
+
+# Add density line
+lines(density(europe_terror$months_since_start, na.rm = TRUE), 
+      col = 'red', 
+      lwd = 2)
 
 
 
 
 
-table(subset_df$gname)
 
-threshold <- 50  # Define a threshold (e.g., groups with <50 occurrences)
-top_groups <- names(table(global_terror$gname)[table(global_terror$gname) >= threshold])
 
-global_terror$gname <- ifelse(global_terror$gname %in% top_groups, global_terror$gname, "Other")
-global_terror$gname <- as.factor(global_terror$gname)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
