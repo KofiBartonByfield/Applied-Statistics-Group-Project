@@ -108,4 +108,22 @@ ggsave("plots/occurance_hist.png")
 
 
 
+# Distribution of Fatalities
+# ==========================
+ggplot(european_terror, aes(x = nkill)) +
+  geom_histogram(binwidth = 5, fill = "darkorange") +
+  scale_y_continuous(trans = "pseudo_log") +  # Handles zeros properly
+  labs(title = "Distribution of Number of Fatalities",
+       x = "Number of Fatalities", 
+       y = "Frequency") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 35,hjust = 1),
+        panel.background = element_rect(fill = "white"),  # White background for plot area
+        plot.background = element_rect(fill = "white"),  # White background for the entire plot
+        axis.line = element_line(color = "black", size = 0.5),
+        panel.grid = element_blank())
+ggsave("plots/fatality_dist.png", width = 7, height = 8, dpi = 300, limitsize = FALSE)
+
+
+
 

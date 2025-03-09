@@ -92,7 +92,7 @@ global_terror$months_since_start <- interval(start_date, global_terror$date_reco
 summary(global_terror$months_since_start)
 
 # just to get an understanding of the distribution
-plot(global_terror$months_since_start)
+# plot(global_terror$months_since_start)
 
 
 
