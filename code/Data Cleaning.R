@@ -24,7 +24,7 @@ dim(global_terror)
 
 # independent variables
 # ---------------------
-cols <- c('gname', 'targtype1', 'weaptype1', 'country')
+cols <- c('gname', 'targtype1_txt', 'weaptype1_txt', 'country_txt')
 
 for (col in cols) {
   cat('\nColumn:', col, '\n')
@@ -142,14 +142,14 @@ summary(global_terror$nwound)
 
 
 # create subset
-european_terror <- global_terror %>% select(nkill,
+european_terror <- global_terror %>% dplyr::select(nkill,
                                             date_recorded,
                                             months_since_start,
                                             time_of_year,
                                             gname, 
-                                            targtype1, 
-                                            weaptype1, 
-                                            country,
+                                            targtype1_txt, 
+                                            weaptype1_txt, 
+                                            country_txt,
                                             region) %>%
                                   filter(region %in% c(8, 9)) # only keep Europe.
 
@@ -209,8 +209,17 @@ sum(european_terror$big_attack) / length(european_terror$big_attack) *100
 # we have 8833 unclaimed attacks
 sum(european_terror$gname == 'Unknown')
 
+# we have unknown target types
+sum(european_terror$targtype1_txt == 'Unknown')
 
-european_terror <- european_terror %>% filter(gname != 'Unknown')
+# we have unknown weapon types
+sum(european_terror$weaptype1_txt == 'Unknown')
+
+
+european_terror <- european_terror  %>% filter(gname != 'Unknown') %>% 
+  filter(targtype1_txt != 'Unknown') %>%
+  filter(weaptype1_txt != 'Unknown')
+  
 
 
 
