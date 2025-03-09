@@ -216,9 +216,9 @@ sum(european_terror$targtype1_txt == 'Unknown')
 sum(european_terror$weaptype1_txt == 'Unknown')
 
 
-european_terror <- european_terror  %>% filter(gname != 'Unknown') %>% 
-  filter(targtype1_txt != 'Unknown') %>%
-  filter(weaptype1_txt != 'Unknown')
+# european_terror <- european_terror  %>% filter(gname != 'Unknown') %>% 
+#   filter(targtype1_txt != 'Unknown') %>%
+#   filter(weaptype1_txt != 'Unknown')
   
 
 
