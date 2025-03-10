@@ -126,4 +126,3 @@ ggsave("plots/fatality_dist.png", width = 7, height = 8, dpi = 300, limitsize = 
 
 
 
-

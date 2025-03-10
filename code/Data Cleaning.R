@@ -163,6 +163,30 @@ dim(european_terror)
 
 
 
+# Removing all the unclaimed attacks..
+# https://pmc.ncbi.nlm.nih.gov/articles/PMC3995656/pdf/pone.0093732.pdf
+
+# we have 8833 unclaimed attacks
+sum(european_terror$gname == 'Unknown')
+
+# we have unknown target types
+sum(european_terror$targtype1_txt == 'Unknown')
+
+# we have unknown weapon types
+sum(european_terror$weaptype1_txt == 'Unknown')
+
+sum(european_terror$nkill == 0)
+
+
+# remove all unknown data and 0 fatalities
+european_terror <- european_terror  %>%
+  filter(gname != 'Unknown') %>%
+  filter(targtype1_txt != 'Unknown') %>%
+  filter(weaptype1_txt != 'Unknown') %>%
+  filter(nkill != 0)
+
+
+
 
 # Quantifying 'Big Attacks'
 # ==========================
@@ -189,7 +213,7 @@ threshold_30 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.3])
 
 # We defined a ‘big attack’ by determining the threshold above
 # which attacks cumulatively account for 50% of all fatalities.
-# = > 6
+# = > 8
 
 european_terror$big_attack <- as.numeric(european_terror$nkill > threshold_50)
 
@@ -198,28 +222,13 @@ summary(european_terror)
 
 # how many of the european attacks are 'big attacks'
 sum(european_terror$big_attack) / length(european_terror$big_attack) *100
-# 1.20% of the attacks are 'big attacks'
+# 4.05% of the attacks are 'big attacks'
 
 
 
 
-# Removing all the unclaimed attacks..
-# https://pmc.ncbi.nlm.nih.gov/articles/PMC3995656/pdf/pone.0093732.pdf
-
-# we have 8833 unclaimed attacks
-sum(european_terror$gname == 'Unknown')
-
-# we have unknown target types
-sum(european_terror$targtype1_txt == 'Unknown')
-
-# we have unknown weapon types
-sum(european_terror$weaptype1_txt == 'Unknown')
 
 
-# european_terror <- european_terror  %>% filter(gname != 'Unknown') %>% 
-#   filter(targtype1_txt != 'Unknown') %>%
-#   filter(weaptype1_txt != 'Unknown')
-  
 
 
 
@@ -232,13 +241,6 @@ names <- as.data.frame(table(european_terror$gname))
 
 write.csv(names, "data/gnames_table.csv")
 write.csv(european_terror, "data/european_terror.csv", row.names = FALSE)
-
-
-
-
-
-
-
 
 
 
