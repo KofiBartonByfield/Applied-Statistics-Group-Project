@@ -22,39 +22,20 @@ european_terror <- read.csv('data/european_terror.csv', stringsAsFactors = TRUE)
 # ==========
 
 # normal poisson model
-poisson_model <- glm(nkill ~ time_of_year + weaptype1_txt + targtype1_txt + country_txt + region + big_attack, 
+poisson_model <- glm(nkill ~ ., 
               data = european_terror, family = poisson)
 
 
-# negative binomial model
-neg_binom_model <- glm.nb(nkill ~ time_of_year + weaptype1_txt + targtype1_txt + country_txt + region + big_attack,  
-                 data = european_terror)
-
-
-
-stargazer(poisson_model, neg_binom_model,  type = 'text')
-
-
-
-
-AIC(poisson_model, neg_binom_model)
-
-# this shows the improvement in the Negative Binomial vs Poisson
-anova(poisson_model, neg_binom_model)
-
-
-dispersion_statistic1 <-    sum(resid(poisson_model, type = "pearson")^2) / poisson_model$df.residual
-dispersion_statistic2 <-    sum(resid(neg_binom_model, type = "pearson")^2) / neg_binom_model$df.residual
-
-
-
-
-
 dispersiontest(poisson_model)
-print(dispersion_statistic1)  # For Poisson
-print(dispersion_statistic2)  # For Negative Binomial
- # this suggests nb over poisson but unsure on this reliability...
 
+stargazer(poisson_model, type='text')
+
+
+
+
+## ================================================
+# releve baselines
+## ================================================
 
 
 # https://biometry.github.io/APES/LectureNotes/2016-JAGS/Overdispersion/OverdispersionJAGS.pdf

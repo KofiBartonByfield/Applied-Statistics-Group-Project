@@ -24,7 +24,7 @@ dim(global_terror)
 
 # independent variables
 # ---------------------
-cols <- c('gname', 'targtype1_txt', 'weaptype1_txt', 'country_txt')
+cols <- c('gname', 'targtype1_txt', 'weaptype1_txt', 'country_txt', 'attacktype1_txt')
 
 for (col in cols) {
   cat('\nColumn:', col, '\n')
@@ -143,13 +143,16 @@ summary(global_terror$nwound)
 
 # create subset
 european_terror <- global_terror %>% dplyr::select(nkill,
-                                            date_recorded,
-                                            months_since_start,
-                                            time_of_year,
+                                            iyear,
+                                            imonth,
                                             gname, 
                                             targtype1_txt, 
-                                            weaptype1_txt, 
+                                            weaptype1_txt,
+                                            attacktype1_txt,
+                                            suicide,
                                             country_txt,
+                                            extended,
+                                            # natlty1_txt,
                                             region) %>%
                                   filter(region %in% c(8, 9)) # only keep Europe.
 
@@ -178,12 +181,19 @@ sum(european_terror$weaptype1_txt == 'Unknown')
 sum(european_terror$nkill == 0)
 
 
+
+
 # remove all unknown data and 0 fatalities
 european_terror <- european_terror  %>%
   filter(gname != 'Unknown') %>%
   filter(targtype1_txt != 'Unknown') %>%
   filter(weaptype1_txt != 'Unknown') %>%
+  filter(attacktype1_txt != 'Unknown') %>%
   filter(nkill != 0)
+
+# ============================================================
+# take out region
+# ============================================================
 
 
 
@@ -194,20 +204,20 @@ european_terror <- european_terror  %>%
 # https://pmc.ncbi.nlm.nih.gov/articles/PMC3995656/pdf/pone.0093732.pdf
 
 # total fatalities
-total_kills <- sum(european_terror$nkill, na.rm = TRUE)
-
-# data for CCDF
-ccdf_data <- data.frame(
-  nkill = sort(unique(european_terror$nkill)),
-  proportion = sapply(sort(unique(european_terror$nkill)), function(x) {
-    sum(european_terror$nkill[european_terror$nkill >= x], na.rm = TRUE) / total_kills
-  })
-)
-
-
-
-threshold_50 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.5])
-threshold_30 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.3])
+# total_kills <- sum(european_terror$nkill, na.rm = TRUE)
+# 
+# # data for CCDF
+# ccdf_data <- data.frame(
+#   nkill = sort(unique(european_terror$nkill)),
+#   proportion = sapply(sort(unique(european_terror$nkill)), function(x) {
+#     sum(european_terror$nkill[european_terror$nkill >= x], na.rm = TRUE) / total_kills
+#   })
+# )
+# 
+# 
+# 
+# threshold_50 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.5])
+# threshold_30 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.3])
 
 
 
@@ -215,31 +225,47 @@ threshold_30 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.3])
 # which attacks cumulatively account for 50% of all fatalities.
 # = > 8
 
-european_terror$big_attack <- as.numeric(european_terror$nkill > threshold_50)
-
-summary(european_terror)
-
-
-# how many of the european attacks are 'big attacks'
-sum(european_terror$big_attack) / length(european_terror$big_attack) *100
-# 4.05% of the attacks are 'big attacks'
-
-
-
-
-
-
-
-
-
-dim(european_terror)
-
-
-names <- as.data.frame(table(european_terror$gname))
+# european_terror$big_attack <- as.numeric(european_terror$nkill > threshold_50)
+# 
+# summary(european_terror)
+# 
+# 
+# # how many of the european attacks are 'big attacks'
+# sum(european_terror$big_attack) / length(european_terror$big_attack) *100
+# # 4.05% of the attacks are 'big attacks'
+# 
+# 
+# 
+# dim(european_terror)
+# 
+# 
+# names <- as.data.frame(table(european_terror$gname))
 
 
 
-write.csv(names, "data/gnames_table.csv")
+# ============================================================
+# only keep the names of groups with more than x() appearances
+# > 10
+# ============================================================
+# make a frequency table of group names
+group_counts <- table(european_terror$gname)
+
+# Identify groups with fewer than 60 appearances
+low_count_groups <- names(group_counts[group_counts < 60])
+
+# Replace those groups with 'Other'
+european_terror$gname <- ifelse(european_terror$gname %in% low_count_groups, "Other", european_terror$gname)
+
+# Check the updated dataset
+table(european_terror$gname)
+
+
+
+
+
+
+# write to csv
+# write.csv(names, "data/gnames_table.csv")
 write.csv(european_terror, "data/european_terror.csv", row.names = FALSE)
 
 
