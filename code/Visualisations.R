@@ -31,32 +31,44 @@ threshold_30 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.3])
 
 # plot CCDF
 ggplot(ccdf_data, aes(x = nkill, y = proportion)) +
-  geom_step(aes(colour = 'Fraction of fatalities'), size = 1) + 
+  geom_step(aes(colour = 'Fraction of fatalities'), size = 1.2, colour = "black") + 
   
+  # Threshold lines with more subtle styling
   geom_segment(aes(x = threshold_30, xend = threshold_30, y = 0, yend = 0.3), 
-               linetype = "dotted", colour = "black", size = 1) + 
+               linetype = "dotted", colour = "gray30", size = 1) + 
+  
   geom_segment(aes(x = threshold_50, xend = threshold_50, y = 0, yend = 0.5), 
-               linetype = "dotted", colour = "black", size = 1) + 
+               linetype = "dotted", colour = "gray30", size = 1) + 
   
-  geom_text(aes(x = threshold_30, y = 0.3, label = paste0('x = ', threshold_30, '\ny = 0.3')), 
-            hjust = -0.2, vjust = -0.3, size = 3, colour = "black") +
+  # Threshold text with adjusted position and cleaner font
+  geom_text(aes(x = threshold_30, y = 0.3, label = paste0('x = ', threshold_30, '\n y = 0.3')), 
+            hjust = 1, vjust = -0.8, size = 3.5, colour = "black", fontface = "plain") +
   
-  geom_text(aes(x = threshold_50, y = 0.5, label = paste0(' x = ', threshold_50, '\ny = 0.5')), 
-            hjust = -0.2, vjust = -0.3, size = 3, colour = "black") + 
+  geom_text(aes(x = threshold_50, y = 0.5, label = paste0('x = ', threshold_50, '\n y = 0.5')), 
+            hjust = 1, vjust = -0.8, size = 3.5, colour = "black", fontface = "plain") + 
   
-  labs(title = "Thresholds Used to Define Big Attacks",
+  # Titles and axis labels with refined fonts
+  labs(title = "Thresholds Defining Significant Attacks",
+       subtitle = "Number of fatalities per attack versus fraction of total fatalities",
        x = "Number of Fatalities per Attack",
-       y = "Fraction of Total Fatalities"
-  ) +
+       y = "Fraction of Total Fatalities") +
+  
+  # Log scale for the x-axis
   scale_x_log10() +
+  
+  # Clean and professional theme adjustments
+  theme_minimal() +
   theme(
-    legend.position = c(0.8, 0.8),   # Move the legend inside the plot (adjust the coordinates as needed)
-    legend.title = element_blank(),   # Remove the legend title
-    # legend.text = element_text(size = 15),  # Adjust legend text size if needed
-    # text = element_text(size = 14),  # Adjust general text size
-    panel.background = element_rect(fill = "white"),  # White background for plot area
-    plot.background = element_rect(fill = "white"),  # White background for the entire plot
-    axis.line = element_line(color = "black", size = 0.5)  # Make axis lines visible
+    legend.position = "none",   # Remove legend for simplicity
+    axis.text = element_text(size = 11, colour = "black"),  # Adjusted axis text size and colour
+    axis.title = element_text(size = 13, colour = "black", face = "bold"),  # Bold axis titles
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5, colour = "darkblue"),  # Title style
+    plot.subtitle = element_text(size = 12, hjust = 0.5, colour = "gray40"),  # Subtitle style
+    panel.grid = element_line(colour = "lightgray", size = 0.5), # Subtle grid lines
+    panel.grid.major = element_line(size = 0.5),  # Grid lines for clarity
+    panel.grid.minor = element_blank(),  # No minor grid lines
+    axis.line = element_line(color = "black", size = 0.5),  # Clear axis lines
+    plot.background = element_rect(fill = "white", colour = "white")  # Clean plot background
   )
 
 ggsave("plots/fatalities_cdf.png")
@@ -67,8 +79,6 @@ ggsave("plots/fatalities_cdf.png")
 # from the European terrorist attacks. 
 # Attacks killing 8 or more people account for 50% of all fatalities. 
 # We also see that only 
-sum(european_terror$big_attack) / length(european_terror$big_attack) *100
-# 1.20% of the attacks are 'big attacks' despite making up 50% of the fatalities
 
 
 
@@ -81,28 +91,26 @@ sum(european_terror$big_attack) / length(european_terror$big_attack) *100
 # Time Series data
 # ================
 
-european_terror$date_recorded <- as.Date(european_terror$date_recorded, format = "%Y-%m-%d")
-
-ggplot(european_terror, aes(x = date_recorded)) +
-  geom_histogram(binwidth = 400, 
+ggplot(european_terror, aes(x = iyear)) +
+  geom_histogram(binwidth = 1, 
                  fill = 'lightgrey', 
                  color = 'black',  
                  size = 0.2) +
   labs(title = 'Distribution of European Terror Attacks Over Time',
-       x = 'Months',
+       x = 'Year',
        y = 'Count') +
-  scale_x_date(
-    breaks = seq(from = min(european_terror$date_recorded), 
-                 to = max(european_terror$date_recorded), 
-                 by = "60 months"),
-    date_labels = "%Y"  
+  scale_x_continuous(
+    breaks = seq(from = min(european_terror$iyear, na.rm = TRUE), 
+                 to = max(european_terror$iyear, na.rm = TRUE), 
+                 by = 5)  
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 35,hjust = 1),
-        panel.background = element_rect(fill = "white"),  # White background for plot area
-        plot.background = element_rect(fill = "white"),  # White background for the entire plot
+  theme(axis.text.x = element_text(angle = 35, hjust = 1),
+        panel.background = element_rect(fill = "white"),  
+        plot.background = element_rect(fill = "white"),  
         axis.line = element_line(color = "black", size = 0.5),
         panel.grid = element_blank())
+
 
 ggsave("plots/occurance_hist.png")
 
@@ -111,12 +119,13 @@ ggsave("plots/occurance_hist.png")
 # Distribution of Fatalities
 # ==========================
 ggplot(european_terror, aes(x = nkill)) +
-  geom_histogram(binwidth = 5, fill = "darkorange") +
-  scale_y_continuous(trans = "pseudo_log") +  # Handles zeros properly
+  geom_histogram(binwidth = 5, fill = "lightblue",color = "black", size = 0.2, na.rm = TRUE) +
+  scale_y_continuous(trans = "log10") +
   labs(title = "Distribution of Number of Fatalities",
        x = "Number of Fatalities", 
-       y = "Frequency") +
+       y = "Frequency (log)") +
   theme_minimal() +
+  
   theme(axis.text.x = element_text(angle = 35,hjust = 1),
         panel.background = element_rect(fill = "white"),  # White background for plot area
         plot.background = element_rect(fill = "white"),  # White background for the entire plot
