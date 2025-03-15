@@ -28,12 +28,10 @@ dim(global_terror)
 european_terror <- global_terror %>% dplyr::select(nkill,
                                                    iyear,
                                                    imonth,
-                                                   # time_of_year,
                                                    gname, 
                                                    targtype1_txt, 
                                                    weaptype1_txt,
                                                    attacktype1_txt,
-                                                   country_txt,
                                                    region) %>%
   filter(region %in% c(8, 9)) # only keep Europe.
 
@@ -107,15 +105,11 @@ sum(european_terror$time_of_year == 0)
 # =====================================================
 # remove: unknown data, 0 fatality cases and region col
 # https://pmc.ncbi.nlm.nih.gov/articles/PMC3995656/pdf/pone.0093732.pdf
-# =====================================================
+# =====================================================================
 
 
 summary(european_terror$nkill)
 # 1080 NA values
-
-# replacing NAs with 0
-european_terror$nkill[is.na(european_terror$nkill)] <- 0
-
 
 # check missing data
 check_missing_data(european_terror)
@@ -125,9 +119,9 @@ european_terror <- european_terror  %>%
   filter(targtype1_txt != 'Unknown') %>%
   filter(weaptype1_txt != 'Unknown') %>%
   filter(attacktype1_txt != 'Unknown') %>%
+  filter(!is.na(nkill)) %>%
   filter(nkill != 0)%>%
   select(-region)
-
 
 check_missing_data(european_terror)
 colnames(european_terror)
@@ -135,9 +129,10 @@ colnames(european_terror)
 
 
 # ============================================================
-# remove the `gname` of groups with < 60 appearances 
+# remove the 'gname' of groups with < 60 appearances 
 # (produces a top 10 of groups)
 # ============================================================
+
 
 # make a frequency table of group names
 group_counts <- table(european_terror$gname)
@@ -146,12 +141,19 @@ group_counts <- table(european_terror$gname)
 low_count_groups <- names(group_counts[group_counts < 60])
 
 # replace those groups names with 'Other'
-european_terror$gname <- ifelse(european_terror$gname %in% low_count_groups, 
+european_terror$gname <- ifelse(european_terror$gname %in% low_count_groups,
                                 "Other", european_terror$gname)
 
-# check the updated dataset
+# check the updated data set
 # (now there are 10 group names)
 table(european_terror$gname)
+
+
+
+
+
+
+
 
 # write to csv
 write.csv(european_terror, "data/european_terror.csv", row.names = FALSE)
@@ -159,4 +161,23 @@ write.csv(european_terror, "data/european_terror.csv", row.names = FALSE)
 
 
 
+
+
+
+
+# ======================
+# inspecting the factors
+# ======================
+
+for (col in colnames(european_terror)) {
+  print(paste("Number of unique values for column:", col))
+  print(length(unique(european_terror[[col]])))
+  
+  # print(unique(european_terror[[col]]))
+  print('')
+  
+}
+
+
+unique(european_terror$targtype1_txt)
 

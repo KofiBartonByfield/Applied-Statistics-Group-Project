@@ -9,8 +9,6 @@ european_terror <- read.csv('data/european_terror.csv')
 
 
 
-
-
 # Quantifying 'Big Attacks'
 # ==========================
 
@@ -33,30 +31,22 @@ threshold_30 <- min(ccdf_data$nkill[ccdf_data$proportion <= 0.3])
 ggplot(ccdf_data, aes(x = nkill, y = proportion)) +
   geom_step(aes(colour = 'Fraction of fatalities'), size = 1.2, colour = "black") + 
   
-  # Threshold lines with more subtle styling
   geom_segment(aes(x = threshold_30, xend = threshold_30, y = 0, yend = 0.3), 
                linetype = "dotted", colour = "gray30", size = 1) + 
   
   geom_segment(aes(x = threshold_50, xend = threshold_50, y = 0, yend = 0.5), 
                linetype = "dotted", colour = "gray30", size = 1) + 
   
-  # Threshold text with adjusted position and cleaner font
   geom_text(aes(x = threshold_30, y = 0.3, label = paste0('x = ', threshold_30, '\n y = 0.3')), 
             hjust = 1, vjust = -0.8, size = 3.5, colour = "black", fontface = "plain") +
   
   geom_text(aes(x = threshold_50, y = 0.5, label = paste0('x = ', threshold_50, '\n y = 0.5')), 
             hjust = 1, vjust = -0.8, size = 3.5, colour = "black", fontface = "plain") + 
-  
-  # Titles and axis labels with refined fonts
   labs(title = "Thresholds Defining Significant Attacks",
        subtitle = "Number of fatalities per attack versus fraction of total fatalities",
        x = "Number of Fatalities per Attack",
        y = "Fraction of Total Fatalities") +
-  
-  # Log scale for the x-axis
-  scale_x_log10() +
-  
-  # Clean and professional theme adjustments
+    scale_x_log10() +
   theme_minimal() +
   theme(
     legend.position = "none",   # Remove legend for simplicity
@@ -93,10 +83,10 @@ ggsave("plots/fatalities_cdf.png")
 
 ggplot(european_terror, aes(x = iyear)) +
   geom_histogram(binwidth = 1, 
-                 fill = 'lightgrey', 
+                 fill = 'orange1', 
                  color = 'black',  
                  size = 0.2) +
-  labs(title = 'Distribution of European Terror Attacks Over Time',
+  labs(title = 'Distribution of European Terror Attacks',
        x = 'Year',
        y = 'Count') +
   scale_x_continuous(
@@ -105,33 +95,40 @@ ggplot(european_terror, aes(x = iyear)) +
                  by = 5)  
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 35, hjust = 1),
+  theme(axis.text.x = element_text(angle = 35, hjust = 1, size=10),
         panel.background = element_rect(fill = "white"),  
         plot.background = element_rect(fill = "white"),  
         axis.line = element_line(color = "black", size = 0.5),
-        panel.grid = element_blank())
+        panel.grid = element_blank(),
+        plot.title = element_text(size=22),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14) )
 
 
-ggsave("plots/occurance_hist.png")
-
+ggsave("plots/occurance_hist.png", width = 10, height = 4)
 
 
 # Distribution of Fatalities
 # ==========================
 ggplot(european_terror, aes(x = nkill)) +
-  geom_histogram(binwidth = 5, fill = "lightblue",color = "black", size = 0.2, na.rm = TRUE) +
+  geom_histogram(binwidth = 5, fill = "orange1",color = "black", size = 0.2, na.rm = TRUE) +
   scale_y_continuous(trans = "log10") +
   labs(title = "Distribution of Number of Fatalities",
        x = "Number of Fatalities", 
-       y = "Frequency (log)") +
+       y = "Frequency (log10)") +
   theme_minimal() +
   
-  theme(axis.text.x = element_text(angle = 35,hjust = 1),
+  theme(axis.text.x = element_text(angle = 35,hjust = 1, size = 10),
         panel.background = element_rect(fill = "white"),  # White background for plot area
         plot.background = element_rect(fill = "white"),  # White background for the entire plot
         axis.line = element_line(color = "black", size = 0.5),
-        panel.grid = element_blank())
-ggsave("plots/fatality_dist.png", width = 7, height = 8, dpi = 300, limitsize = FALSE)
+        panel.grid = element_blank(),
+        plot.title = element_text(size=22),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14) 
+        )
+
+ggsave("plots/fatality_dist.png", width = 10, height = 4)
 
 
 
