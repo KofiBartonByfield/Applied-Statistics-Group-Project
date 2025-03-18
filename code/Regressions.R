@@ -376,92 +376,92 @@ stargazer(nb_model,
 ## ==================
 ### Individual Models
 ## ==================
-
-
-
-# Gname
-stargazer(glm.nb(nkill ~ gname, data = european_terror), 
-          type = 'text',
-          apply.coef = exp,
-          out = 'tables/gname_model.tex',
-          title = 'Terrorist Group Name',
-          covariate.labels = c('Basque Fatherland and Freedom',
-                               'Chechen Rebels',
-                               "Donetsk People's Republic",
-                               'Irish National Liberation Army (INLA)',
-                               'Irish Republican Army (IRA)',
-                               'Irish Republican Extremists',
-                               'Protestant extremists',
-                               'Ulster Freedom Fighters (UFF)',
-                               'Ulster Volunteer Force (UVF)',
-                               'Other')
-)
-
-
-
-# Weapon Type
-stargazer(glm.nb(nkill ~ weaptype1_txt, data = european_terror), 
-          type = 'text',
-          apply.coef = exp,
-          out = 'tables/weapon_model.tex',
-          title = 'Weapon Used in the Attack',
-          covariate.labels = c('Weapon = Chemical',
-                               'Weapon = Explosives',
-                               'Weapon = Incendiary',
-                               'Weapon = Melee',
-                               'Weapon = Other',
-                               'Weapon = Vehicle',
-                               'Weapon = Firearms'))
-
-# Target Type
-stargazer(glm.nb(nkill ~ targtype1_txt , data = european_terror), 
-          type = 'text',
-          apply.coef = exp,
-          out = 'tables/target_model.tex',
-          title = 'Target of Attack',
-          covariate.labels = c('Target = Airport',
-                               'Target = Business',
-                               'Target = Educational Institution',
-                               'Target = Food or Water Supply',
-                               'Target = Government (Diplomatic)',
-                               'Target = Government (General)',
-                               'Target = Journalists',
-                               'Target = Maritime',
-                               'Target = Military',
-                               'Target = NGO',
-                               'Target = Other',
-                               'Target = Police',
-                               'Target = Religious Figure or Institution',
-                               'Target = Telecommunication',
-                               'Target = Terrorist or Non-State Militia',
-                               'Target = Tourists',
-                               'Target = Transportation',
-                               'Target = Utilities',
-                               'Target = Violent Political Party',
-                               'Target = Private Citizens & Property'),
-          omit = c('Food or Water Supply',
-                   'NGO',
-                   'Other',
-                   'Telecommunication'))
-
-
-
-# Attack Type
-stargazer(glm.nb(nkill ~ attacktype1_txt, data = european_terror) , 
-          type = 'text',
-          apply.coef = exp,
-          out = 'tables/attack_model.tex',
-          title = 'Type of Attack', 
-          covariate.labels = c('Armed Assault',
-                               'Bombing or Explosion',
-                               'Facility or Infrastructure Attack',
-                               'Hijacking',
-                               'Hostage Taking (Barricade)',
-                               'Hostage Taking (Kidnapping)',
-                               'Unarmed Assault',
-                               'Assassination'))
-
-
+# 
+# 
+# 
+# # Gname
+# stargazer(glm.nb(nkill ~ gname, data = european_terror), 
+#           type = 'text',
+#           apply.coef = exp,
+#           out = 'tables/gname_model.tex',
+#           title = 'Terrorist Group Name',
+#           covariate.labels = c('Basque Fatherland and Freedom',
+#                                'Chechen Rebels',
+#                                "Donetsk People's Republic",
+#                                'Irish National Liberation Army (INLA)',
+#                                'Irish Republican Army (IRA)',
+#                                'Irish Republican Extremists',
+#                                'Protestant extremists',
+#                                'Ulster Freedom Fighters (UFF)',
+#                                'Ulster Volunteer Force (UVF)',
+#                                'Other')
+# )
+# 
+# 
+# 
+# # Weapon Type
+# stargazer(glm.nb(nkill ~ weaptype1_txt, data = european_terror), 
+#           type = 'text',
+#           apply.coef = exp,
+#           out = 'tables/weapon_model.tex',
+#           title = 'Weapon Used in the Attack',
+#           covariate.labels = c('Weapon = Chemical',
+#                                'Weapon = Explosives',
+#                                'Weapon = Incendiary',
+#                                'Weapon = Melee',
+#                                'Weapon = Other',
+#                                'Weapon = Vehicle',
+#                                'Weapon = Firearms'))
+# 
+# # Target Type
+# stargazer(glm.nb(nkill ~ targtype1_txt , data = european_terror), 
+#           type = 'text',
+#           apply.coef = exp,
+#           out = 'tables/target_model.tex',
+#           title = 'Target of Attack',
+#           covariate.labels = c('Target = Airport',
+#                                'Target = Business',
+#                                'Target = Educational Institution',
+#                                'Target = Food or Water Supply',
+#                                'Target = Government (Diplomatic)',
+#                                'Target = Government (General)',
+#                                'Target = Journalists',
+#                                'Target = Maritime',
+#                                'Target = Military',
+#                                'Target = NGO',
+#                                'Target = Other',
+#                                'Target = Police',
+#                                'Target = Religious Figure or Institution',
+#                                'Target = Telecommunication',
+#                                'Target = Terrorist or Non-State Militia',
+#                                'Target = Tourists',
+#                                'Target = Transportation',
+#                                'Target = Utilities',
+#                                'Target = Violent Political Party',
+#                                'Target = Private Citizens & Property'),
+#           omit = c('Food or Water Supply',
+#                    'NGO',
+#                    'Other',
+#                    'Telecommunication'))
+# 
+# 
+# 
+# # Attack Type
+# stargazer(glm.nb(nkill ~ attacktype1_txt, data = european_terror) , 
+#           type = 'text',
+#           apply.coef = exp,
+#           out = 'tables/attack_model.tex',
+#           title = 'Type of Attack', 
+#           covariate.labels = c('Armed Assault',
+#                                'Bombing or Explosion',
+#                                'Facility or Infrastructure Attack',
+#                                'Hijacking',
+#                                'Hostage Taking (Barricade)',
+#                                'Hostage Taking (Kidnapping)',
+#                                'Unarmed Assault',
+#                                'Assassination'))
+# 
+# 
 
 
 

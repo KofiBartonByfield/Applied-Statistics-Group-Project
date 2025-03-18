@@ -1,5 +1,8 @@
+
+> # Generate and print the LaTeX code without row names
+> print(xtable(aic_values), type = "latex", include.rownames = FALSE)
 % latex table generated in R 4.3.2 by xtable 1.8-4 package
-% Sat Mar 15 15:57:42 2025
+% Tue Mar 18 11:27:04 2025
 \begin{table}[ht]
 \centering
 \begin{tabular}{lr}
@@ -12,3 +15,6 @@ OLS model & 30135.84 \\
    \hline
 \end{tabular}
 \end{table}
+
+> # Close the sink to stop redirecting output to the file
+> sink()
