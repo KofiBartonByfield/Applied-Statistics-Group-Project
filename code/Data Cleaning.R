@@ -98,6 +98,10 @@ sum(is.na(european_terror$time_of_year))
 sum(european_terror$time_of_year == 0)
 
 
+# rename region columns
+european_terror$region[european_terror$region == 8] <- 'Western Europe'
+european_terror$region[european_terror$region == 9] <- 'Eastern Europe'
+
 
 
 
@@ -120,12 +124,10 @@ european_terror <- european_terror  %>%
   filter(weaptype1_txt != 'Unknown') %>%
   filter(attacktype1_txt != 'Unknown') %>%
   filter(!is.na(nkill)) %>%
-  filter(nkill != 0)%>%
-  select(-region)
+  filter(nkill != 0)
 
 check_missing_data(european_terror)
 colnames(european_terror)
-
 
 
 # ============================================================
