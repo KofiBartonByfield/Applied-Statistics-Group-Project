@@ -4,9 +4,9 @@ rm(list = ls())
 # load in libraries
 library(ggplot2)
 library(stargazer)
+library(xtable)
 library(MASS)
 library(AER) # dispersiontest()
-library(fixest)
 
 
 # read in the data
@@ -64,7 +64,8 @@ european_terror$attacktype1_txt   <- relevel(european_terror$attacktype1_txt,
 european_terror$time_of_year <- relevel(european_terror$time_of_year, 
                                         ref = "Summer")
 
-
+european_terror$region <- relevel(european_terror$region, 
+                                 ref = "Western Europe")
 
 
 
@@ -132,23 +133,21 @@ dispersiontest(poisson_model)
 # check AIC
 AIC(ols_model, poisson_model, nb_model)
 
-library(xtable)
 
 
-aic_values <- data.frame(
+  aic_values <- data.frame(
   Model = c("OLS model", "Poisson Model", "Negative Binomial Model"),
   AIC = c(AIC(ols_model), AIC(poisson_model), AIC(nb_model))
 )
 
-
-
+  
+# print the LaTeX code without row names
 sink('tables/aic_table.tex')
 
-# Generate and print the LaTeX code without row names
 print(xtable(aic_values), type = "latex", include.rownames = FALSE)
 
-# Close the sink to stop redirecting output to the file
 sink()
+# stop redirecting output to the file
 
 
 
@@ -210,67 +209,27 @@ stargazer(nb_model,
                                'Hostage Taking (Barricade)',
                                'Hostage Taking (Kidnapping)',
                                'Unarmed Assault',
+                               'Region = Eastern Europe',
                                'Time of Year = Autumn',
                                'Time of Year = Spring',
-                               'Time of Year = Winter'
-                              ),
-          title = 'Full Model Output',
-          column.sep.width = "0.1pt"
-            )
+                               'Time of Year = Winter',
+                               'Constant'),
+          title = 'Full Model Output')
 
 
 
+## ==================
+### Individual Models
+## ==================
+ 
+ 
 
-
-# ==================
-# Attack type table
-# ==================
-stargazer(nb_model, 
-          type = "text", 
-          apply.coef = exp, 
-          omit = c('targ', 'gname', 'weap' , 'iyear', 'imonth' , 'time_of', 'Const'),
-          out = 'tables/attack_model.tex',
-          covariate.labels = c('Armed Assault',
-                                'Bombing or Explosion',
-                                'Facility or Infrastructure Attack',
-                                'Hijacking',
-                                'Hostage Taking (Barricade)',
-                                'Hostage Taking (Kidnapping)',
-                                'Unarmed Assault'),
-          dep.var.labels   = 'Number of Fatalities',
-          title = 'Type of Attack')  
-
-
-
-
-# ==================
-# Weapon type table
-# ==================
-stargazer(nb_model, 
-          type = "text", 
-          apply.coef = exp, 
-          out = 'tables/weapon_model.tex',
-          omit = c('attack', 'targ', 'gname' , 'iyear', 'imonth' , 'time_of', 'Const'),
-          covariate.labels = c('Weapon = Chemical',
-                               'Weapon = Explosives',
-                               'Weapon = Incendiary',
-                               'Weapon = Melee',
-                               'Weapon = Other',
-                               'Weapon = Vehicle'),
-          dep.var.labels   = 'Number of Fatalities',
-          title = 'Weapon Used in the Attack'
-          
-)  
-
-
-# ==================
-# Name type table
-# ==================
-stargazer(nb_model, 
-          type = "text", 
-          apply.coef = exp, 
-          out = 'tables/name_model.tex',
-          omit = c('attack', 'targ', 'weap' , 'iyear', 'imonth' , 'time_of', 'Const'),
+# Gname
+stargazer(glm.nb(nkill ~ gname, data = european_terror),
+          type = 'text',
+          apply.coef = exp,
+          out = 'tables/gname_model.tex',
+          title = 'Terrorist Group Name',
           covariate.labels = c('Basque Fatherland and Freedom',
                                'Chechen Rebels',
                                "Donetsk People's Republic",
@@ -279,24 +238,32 @@ stargazer(nb_model,
                                'Irish Republican Extremists',
                                'Protestant extremists',
                                'Ulster Freedom Fighters (UFF)',
-                               'Ulster Volunteer Force (UVF)'),
-          dep.var.labels   = 'Number of Fatalities',
-          title = 'Terrorist Group Name'
-)  
+                               'Ulster Volunteer Force (UVF)',
+                               'Other')
+)
 
+ 
 
+# # Weapon Type
+stargazer(glm.nb(nkill ~ weaptype1_txt, data = european_terror),
+          type = 'text',
+          apply.coef = exp,
+          out = 'tables/weapon_model.tex',
+          title = 'Weapon Used in the Attack',
+          covariate.labels = c('Weapon = Chemical',
+                               'Weapon = Explosives',
+                               'Weapon = Incendiary',
+                               'Weapon = Melee',
+                               'Weapon = Other',
+                               'Weapon = Vehicle',
+                               'Weapon = Firearms'))
 
-
-
-
-# ==================
-# Target type table
-# ==================
-stargazer(nb_model, 
-          type = "text", 
-          apply.coef = exp, 
+# # Target Type
+stargazer(glm.nb(nkill ~ targtype1_txt , data = european_terror),
+          type = 'text',
+          apply.coef = exp,
           out = 'tables/target_model.tex',
-          omit = c('attack', 'gname', 'weap' , 'iyear', 'imonth' , 'time_of', 'Const'),
+          title = 'Target of Attack',
           covariate.labels = c('Target = Airport',
                                'Target = Business',
                                'Target = Educational Institution',
@@ -315,153 +282,30 @@ stargazer(nb_model,
                                'Target = Tourists',
                                'Target = Transportation',
                                'Target = Utilities',
-                               'Target = Violent Political Party'),
-          dep.var.labels   = 'Number of Fatalities',
-          title = 'Target of Attack'
-)  
+                               'Target = Violent Political Party',
+                               'Target = Private Citizens and Property'))#,
+          # omit = c('Food or Water Supply',
+          #          'NGO',
+          #          'Other',
+          #          'Telecommunication'))
 
-# ----------------------------------
-# Removing Non Significant Variables
-# ----------------------------------
-
-stargazer(nb_model, 
-          type = "text", 
-          apply.coef = exp, 
-          out = 'tables/partial_target_model.tex',
-          omit = c('attack', 'gname', 'weap' , 'iyear', 'imonth' , 'time_of', 'Const',
-                   'Food or Water Supply',
-                   'NGO',
-                   'Other',
-                   'Telecommunication'),
-          covariate.labels = c('Target = Airport',
-                               'Target = Business',
-                               'Target = Educational Institution',
-                               'Target = Government (Diplomatic)',
-                               'Target =  Government (General)',
-                               'Target = Journalists',
-                               'Target = Maritime',
-                               'Target = Military',
-                               'Target = Police',
-                               'Target = Religious Figure or Institution',
-                               'Target = Terrorist or Non-State Militia',
-                               'Target = Tourists',
-                               'Target = Transportation',
-                               'Target = Utilities',
-                               'Target = Violent Political Party'),
-          dep.var.labels   = 'Number of Fatalities',
-          title = 'Target of Attack'
-)  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## ==================
-### Individual Models
-## ==================
-# 
-# 
-# 
-# # Gname
-# stargazer(glm.nb(nkill ~ gname, data = european_terror), 
-#           type = 'text',
-#           apply.coef = exp,
-#           out = 'tables/gname_model.tex',
-#           title = 'Terrorist Group Name',
-#           covariate.labels = c('Basque Fatherland and Freedom',
-#                                'Chechen Rebels',
-#                                "Donetsk People's Republic",
-#                                'Irish National Liberation Army (INLA)',
-#                                'Irish Republican Army (IRA)',
-#                                'Irish Republican Extremists',
-#                                'Protestant extremists',
-#                                'Ulster Freedom Fighters (UFF)',
-#                                'Ulster Volunteer Force (UVF)',
-#                                'Other')
-# )
-# 
-# 
-# 
-# # Weapon Type
-# stargazer(glm.nb(nkill ~ weaptype1_txt, data = european_terror), 
-#           type = 'text',
-#           apply.coef = exp,
-#           out = 'tables/weapon_model.tex',
-#           title = 'Weapon Used in the Attack',
-#           covariate.labels = c('Weapon = Chemical',
-#                                'Weapon = Explosives',
-#                                'Weapon = Incendiary',
-#                                'Weapon = Melee',
-#                                'Weapon = Other',
-#                                'Weapon = Vehicle',
-#                                'Weapon = Firearms'))
-# 
-# # Target Type
-# stargazer(glm.nb(nkill ~ targtype1_txt , data = european_terror), 
-#           type = 'text',
-#           apply.coef = exp,
-#           out = 'tables/target_model.tex',
-#           title = 'Target of Attack',
-#           covariate.labels = c('Target = Airport',
-#                                'Target = Business',
-#                                'Target = Educational Institution',
-#                                'Target = Food or Water Supply',
-#                                'Target = Government (Diplomatic)',
-#                                'Target = Government (General)',
-#                                'Target = Journalists',
-#                                'Target = Maritime',
-#                                'Target = Military',
-#                                'Target = NGO',
-#                                'Target = Other',
-#                                'Target = Police',
-#                                'Target = Religious Figure or Institution',
-#                                'Target = Telecommunication',
-#                                'Target = Terrorist or Non-State Militia',
-#                                'Target = Tourists',
-#                                'Target = Transportation',
-#                                'Target = Utilities',
-#                                'Target = Violent Political Party',
-#                                'Target = Private Citizens & Property'),
-#           omit = c('Food or Water Supply',
-#                    'NGO',
-#                    'Other',
-#                    'Telecommunication'))
-# 
-# 
-# 
+ 
+ 
 # # Attack Type
-# stargazer(glm.nb(nkill ~ attacktype1_txt, data = european_terror) , 
-#           type = 'text',
-#           apply.coef = exp,
-#           out = 'tables/attack_model.tex',
-#           title = 'Type of Attack', 
-#           covariate.labels = c('Armed Assault',
-#                                'Bombing or Explosion',
-#                                'Facility or Infrastructure Attack',
-#                                'Hijacking',
-#                                'Hostage Taking (Barricade)',
-#                                'Hostage Taking (Kidnapping)',
-#                                'Unarmed Assault',
-#                                'Assassination'))
-# 
-# 
+stargazer(glm.nb(nkill ~ attacktype1_txt, data = european_terror) ,
+          type = 'text',
+          apply.coef = exp,
+          out = 'tables/attack_model.tex',
+          title = 'Type of Attack',
+          covariate.labels = c('Armed Assault',
+                               'Bombing or Explosion',
+                               'Facility or Infrastructure Attack',
+                               'Hijacking',
+                               'Hostage Taking (Barricade)',
+                               'Hostage Taking (Kidnapping)',
+                               'Unarmed Assault',
+                               'Assassination'))
+
 
 
 
