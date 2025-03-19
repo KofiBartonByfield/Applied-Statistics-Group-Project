@@ -151,6 +151,23 @@ sink()
 
 
 
+
+# ==========================================================================================
+null_nb_model <- glm.nb(nkill ~ 1, 
+                   data = european_terror) 
+
+anova(nb_model, null_nb_model)
+
+
+
+
+
+anova(ols_model,poisson_model, nb_model, test = "Chisq")
+# ==========================================================================================
+
+
+
+
 # ========================
 # interpreting the outputs
 # ======================== 
