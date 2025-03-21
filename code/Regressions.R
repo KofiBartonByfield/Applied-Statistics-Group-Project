@@ -152,18 +152,33 @@ sink()
 
 
 
-# ==========================================================================================
-null_nb_model <- glm.nb(nkill ~ 1, 
-                   data = european_terror) 
+# ------------------------
+# comparing the model fits
+# ------------------------
 
-anova(nb_model, null_nb_model)
+# chisq test on the two 'better' models
+anova(poisson_model, nb_model, 
+      test = "Chisq")
+
+
+# for the table
+anova_values <- data.frame(
+  Model = c("Poisson Model", "Negative Binomial Model"),
+  AIC = c(anova(poisson_model, nb_model,test = "Chisq"))
+)
 
 
 
+# print the LaTeX code without row names
+sink('tables/anova_table.tex')
+
+print(xtable(anova_values), type = "latex", include.rownames = FALSE)
+
+sink()
+# stop redirecting output to the file
 
 
-anova(ols_model,poisson_model, nb_model, test = "Chisq")
-# ==========================================================================================
+
 
 
 
@@ -235,11 +250,13 @@ stargazer(nb_model,
 
 
 
+
+
+
+
 ## ==================
 ### Individual Models
 ## ==================
- 
- 
 
 # Gname
 stargazer(glm.nb(nkill ~ gname, data = european_terror),
