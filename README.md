@@ -1,4 +1,4 @@
-# README: The Hard Science of Soft Targets -- What Makes Terrorist Attacks Lethal in Europe
+# The Hard Science of Soft Targets -- What Makes Terrorist Attacks Lethal in Europe
 
 ## Overview
 This repository contains the code, data, and analysis for the Applied Statistical Analysis II group assignment investigating the factors influencing the lethality of terrorist attacks in Europe. Our research applies the Attack Contextual and Tactical InteractiON (ACTION) framework, which explores how environmental context, tactical decisions, and group experience contribute to variations in casualties and fatalities.
